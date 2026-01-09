@@ -25,3 +25,7 @@ app.add_middleware(
     allow_methods=["*"],         # allow all HTTP methods
     allow_headers=["*"],         # allow all headers
 )
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
