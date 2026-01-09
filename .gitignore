@@ -1,0 +1,46 @@
+# --- Global ignores ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.env
+.env.*
+.vscode/
+.idea/
+.DS_Store
+
+# --- Python virtual environments ---
+venv/
+env/
+.venv/
+ENV/
+
+# --- Node.js / Frontend ---
+node_modules/
+dist/
+build/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# --- System files ---
+Thumbs.db
+*.swp
+*.swo
+
+# --- Output / temporary files ---
+*.tmp
+*.bak
+*.old
+*.orig
+
+# --- Local databases or uploads ---
+MentalHealth.db
+uploads/
+media/
