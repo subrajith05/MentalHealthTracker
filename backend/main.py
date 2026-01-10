@@ -8,7 +8,7 @@ models.Base.metadata.create_all(database.engine)
 
 app = FastAPI()
 
-app.include_router(auth.router)
+app.include_router(auth.router, prefix='/auth')
 app.include_router(checkins.router)
 app.include_router(resources.router)
 

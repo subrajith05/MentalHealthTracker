@@ -3,17 +3,14 @@ from .. import  models, schemas, database, hashing, utils
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 
-router = APIRouter(
-    tags=["Authentication"],
-    prefix='/auth'
-)
+router = APIRouter(tags=["Authentication"])
 
 get_db = database.get_db
 
 #Registering a new user
 @router.post('/register', response_model=schemas.ShowUser, status_code=status.HTTP_201_CREATED)
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
-    if not db.query(models.User).filter(models.User.email).first():
+    if not db.query(models.User).filter(models.User.email == request.email).first():
         new_user = models.User(
             name=request.name,
             email=request.email,
@@ -40,7 +37,7 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email {request.email} not for\nTry registering as new user"
+            detail=f"User with email {request.username} not found. Try registering as new user"
         )
     
     #Verify the password
