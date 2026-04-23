@@ -15,7 +15,8 @@ app.include_router(resources.router)
 # Allow frontend origin(s)
 origins = [
     "http://localhost:5173",  # Vite frontend
-    "http://127.0.0.1:5173", # sometimes vite uses this
+    "http://127.0.0.1:5173",
+    "https://mental-health-tracker-amber-theta.vercel.app", # Deployed frontend
 ]
 
 app.add_middleware(
