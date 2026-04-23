@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../services/api"; // ✅ ADD THIS
 import "../styles/Login.css";
 
 function Login() {
@@ -17,20 +18,15 @@ function Login() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const res = await fetch("http://localhost:8000/auth/login", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await api.post("/auth/login", formData);
 
-      if (!res.ok) {
-        throw new Error("Invalid credentials");
-      }
-
-      const data = await res.json();
-      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("token", res.data.access_token);
       navigate("/dashboard");
+
     } catch (err) {
-      setError("❌ Invalid email or password");
+      setError(
+        err.response?.data?.detail || "❌ Invalid email or password"
+      );
     }
   };
 

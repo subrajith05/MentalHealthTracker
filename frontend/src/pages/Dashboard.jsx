@@ -6,6 +6,7 @@ import MoodChart from "../components/MoodChart";
 import PatternsCard from "../components/PatternsCard";
 import CheckinList from "../components/CheckinList";
 import ResourceSuggestions from "../components/ResourceSuggestions";
+import api from "../services/api";
 import "../styles/Dashboard.css";
 
 function Dashboard() {
@@ -16,37 +17,40 @@ function Dashboard() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const fetchWithToken = async (endpoint) => {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("Not authenticated");
-    const res = await fetch(endpoint, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-    });
-    if (!res.ok) throw new Error("Failed: " + res.statusText);
-    return await res.json();
-  };
-
   const loadDashboard = async () => {
     try {
-      const [checkData, summaryData, patternData, suggestionData] = await Promise.all([
-        fetchWithToken("http://localhost:8000/checkin/show"),
-        fetchWithToken("http://localhost:8000/checkin/summary"),
-        fetchWithToken("http://localhost:8000/checkin/patterns"),
-        fetchWithToken("http://localhost:8000/resources/suggestions"),
-      ]);
-      setCheckins(checkData);
-      setSummary(summaryData);
-      setPatterns(patternData.patterns || {});
-      setSuggestions(suggestionData);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const [checkData, summaryData, patternData, suggestionData] =
+        await Promise.all([
+          api.get("/checkin/show", config),
+          api.get("/checkin/summary", config),
+          api.get("/checkin/patterns", config),
+          api.get("/resources/suggestions", config),
+        ]);
+
+      setCheckins(checkData.data);
+      setSummary(summaryData.data);
+      setPatterns(patternData.data.patterns || {});
+      setSuggestions(suggestionData.data);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.detail || "Failed to load dashboard");
     }
   };
 
-  useEffect(() => { loadDashboard(); }, []);
+  useEffect(() => {
+    loadDashboard();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -57,6 +61,7 @@ function Dashboard() {
     <div className="dashboard-page">
       <DashboardHeader onLogout={handleLogout} />
       {error && <p className="error-text">{error}</p>}
+
       <main className="dashboard-content">
         <div className="dashboard-grid">
           <SummaryCard summary={summary} />
@@ -67,7 +72,9 @@ function Dashboard() {
         </div>
       </main>
 
-      <Link to="/add-checkin" className="add-btn">+ Add Check-in</Link>
+      <Link to="/add-checkin" className="add-btn">
+        + Add Check-in
+      </Link>
     </div>
   );
 }

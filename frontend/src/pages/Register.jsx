@@ -23,8 +23,11 @@ function Register() {
       console.log("✅ Registered:", response.data);
       navigate("/login");
     } catch (err) {
-      console.error("❌ Registration failed:", err.response?.data || err.message);
-      setError("Registration failed. Try again.");
+        const message =
+          err.response?.data?.detail ||
+          "Registration failed. Try again.";
+        
+        setError(`❌ ${message}`);
     }
   };
 

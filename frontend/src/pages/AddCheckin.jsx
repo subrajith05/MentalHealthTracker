@@ -1,8 +1,8 @@
-// src/pages/AddCheckin.jsx
 import React, { useState } from "react";
 import "../styles/AddCheckin.css";
 import { useNavigate } from "react-router-dom";
 import CheckinForm from "../components/CheckinForm";
+import api from "../services/api";
 
 function AddCheckin() {
   const [mood, setMood] = useState("");
@@ -15,24 +15,24 @@ function AddCheckin() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:8000/checkin/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ mood, note }),
-      });
+      const res = await api.post(
+        "/checkin/add",
+        { mood, note },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-      if (res.ok) {
+      if (res.status === 200 || res.status === 201) {
         setMessage("✅ Check-in added successfully!");
         setTimeout(() => navigate("/dashboard"), 1200);
-      } else {
-        const errData = await res.json();
-        setMessage(`❌ ${errData.detail || "Something went wrong"}`);
       }
     } catch (error) {
-      setMessage("⚠️ Server connection failed");
+      const errMsg =
+        error.response?.data?.detail || "Something went wrong";
+      setMessage(`❌ ${errMsg}`);
     }
   };
 
