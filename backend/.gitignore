@@ -21,3 +21,5 @@ env/
 
 # Alembic migrations cache
 alembic/versions/__pycache__/
+
+appfiles/routes/check.py

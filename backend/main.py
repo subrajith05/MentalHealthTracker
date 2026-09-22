@@ -1,7 +1,9 @@
 from fastapi import FastAPI
-from appfiles.routes import auth, checkins, resources
+from appfiles.routes import auth, checkins, resources, ai
 from appfiles import models, database
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+load_dotenv()
 
 models.Base.metadata.create_all(database.engine)
 
@@ -11,6 +13,7 @@ app = FastAPI()
 app.include_router(auth.router, prefix='/auth')
 app.include_router(checkins.router)
 app.include_router(resources.router)
+app.include_router(ai.router)
 
 # Allow frontend origin(s)
 origins = [
